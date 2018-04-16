@@ -1,0 +1,331 @@
+*/CONNECTION DATABASE AND LOGIN ID & PASSWORD
+try{
+Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        Statement stmt=con.createStatement();
+        String uname=tf1.getText();
+        char ch[]=tf2.getPassword();
+        String pword=String.valueOf(ch);
+        String query="select * from admin where username='"+uname+"'and password='"+pword+"'";
+        ResultSet rs=stmt.executeQuery(query);
+        if(rs.next())
+        {
+             JOptionPane.showMessageDialog(this,"login succesfully");
+            new ManageProduct().setVisible(true);
+            dispose();
+        }else
+        {
+             JOptionPane.showMessageDialog(this,"incorrect uname/pword");
+        }
+    }catch(Exception e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+
+
+
+*/INSERT PRODUCT
+
+try{
+       
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        Statement stmt=con.createStatement();
+        String pid=tf1.getText();
+        String pname=tf2.getText();
+        String make=tf3.getText();
+        String spec=tf4.getText();
+        int grno=Integer.parseInt(tf5.getText());
+        String date=(String)cb1.getSelectedItem();
+        String month=(String)cb2.getSelectedItem();
+        String year=(String)cb3.getSelectedItem();
+        int billno=Integer.parseInt(tf7.getText());
+        String sname=tf8.getText();
+        int quantity=Integer.parseInt(tf9.getText());
+        
+        String query="insert into PRODUCT_TABLE values("+pid+",'"+pname+"','"+make+"','"+spec+"','"+grno+"','"+date+"-"+month+"-"+year+"','"+billno+"','"+sname+"','"+quantity+"',null)";
+        String query1="insert into AVAILABLE_TABLE values("+pid+",'"+pname+"','"+spec+"','"+quantity+"')";
+        int rs=stmt.executeUpdate(query);
+        int rs1=stmt.executeUpdate(query1);
+        JOptionPane.showMessageDialog(this,"Record inserted successfully");
+        System.out.println(rs+"record inserted");
+    
+    }catch(Exception e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+
+
+*/CLEAR ALL TEXT FIELD
+
+        tf1.setText("");
+        tf2.setText("");
+        tf3.setText("");
+        tf4.setText("");
+        tf5.setText("");
+        tf7.setText("");
+        tf8.setText("");
+        tf9.setText("");
+
+
+*/IN UPDATE PRODUCT 1ST RETRIVE DATA FROM DATA BASE IN PRODUCT TABLE
+
+ try{
+            pid=tf1.getText();
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        String query="select * from PRODUCT_TABLE where product_id="+pid+"";
+        PreparedStatement stmt=con.prepareStatement(query);
+        ResultSet rs=stmt.executeQuery();
+        while (rs.next()) 
+            {
+              tf1.setText(rs.getString("product_id"));
+              tf2.setText(rs.getString("make"));
+              tf5.setText(rs.getString("product_name"));
+              tf6.setText(rs.getString("specification"));
+              tf9.setText(rs.getString("quantity"));
+            }
+   }catch(ClassNotFoundException | SQLException e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+*/2ND TIME ITEM INSERT IN PRODUCT TABLE AND UPDATE IN AVAILABLE TABLE
+
+try{
+       
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        Statement stmt=con.createStatement();
+        //String pid=tf1.getText();
+        String make=tf2.getText();
+        int grno=Integer.parseInt(tf3.getText());
+        String billno=(tf4.getText());
+        String pname=tf5.getText(); 
+        String spec=tf6.getText();
+        
+        String date=(String)cb1.getSelectedItem();
+        String month=(String)cb2.getSelectedItem();
+        String year=(String)cb3.getSelectedItem();
+       
+        String sname=tf8.getText();
+        int quantity=Integer.parseInt(tf9.getText());
+        int qtad=Integer.parseInt(tf10.getText());
+        
+        String query="insert into PRODUCT_TABLE values("+pid+",'"+pname+"','"+make+"','"+spec+"','"+grno+"','"+date+"-"+month+"-"+year+"','"+billno+"','"+sname+"','"+quantity+"','"+qtad+"')";
+        String query1="update AVAILABLE_TABLE set quantity=(quantity+'"+qtad+"') where product_id="+pid+"";
+        int rs=stmt.executeUpdate(query);
+        int rs1=stmt.executeUpdate(query1);
+        JOptionPane.showMessageDialog(this,"Record updated successfully");
+        System.out.println(rs+"record inserted");
+    
+    }catch(Exception e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+*//VIEW TABLE DETAILS
+**/SHOW PID PNAME AND SPECIFICATION
+
+ public searchid() {
+        initComponents();
+    }
+     @SuppressWarnings("empty-statement")
+     public void view(){
+        
+         
+      DefaultTableModel dm =(DefaultTableModel)jTable2.getModel();
+      try{
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        String query="select * from PRODUCT_TABLE";
+        PreparedStatement stmt=con.prepareStatement(query);
+        ResultSet rs=stmt.executeQuery();
+        while (rs.next()) 
+        {
+             dm.addRow(new Object[]{rs.getString(1),rs.getString(2),rs.getString(4)});
+             jTable2.setModel(dm);
+             System.out.println("+dm+ ");
+            }
+    }catch(ClassNotFoundException | SQLException e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+
+*/SEARCH PRODUCT NAME
+
+   DefaultTableModel dm =(DefaultTableModel)jTable2.getModel();
+        try{
+        int rec=dm.getRowCount();
+        if(rec>0)
+        {
+            for(int i=0;i<rec;i++)
+            dm.removeRow(0);
+        }
+        String pname=tf1.getText();
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        String query="select * from PRODUCT_TABLE where product_name='"+pname+"'";
+        PreparedStatement stmt=con.prepareStatement(query);
+        ResultSet rs=stmt.executeQuery();
+        while (rs.next()) 
+            {
+             dm.addRow(new Object[]{rs.getString(1),rs.getString(2),rs.getString(4)});
+             jTable2.setModel(dm); 
+           
+              
+            }
+   }catch(ClassNotFoundException | SQLException e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+
+*/SHOW MASTER TABLE
+
+ public productdetails() {
+        initComponents();
+    }
+    @SuppressWarnings("empty-statement")
+    public void view(){
+        
+         
+      DefaultTableModel dm =(DefaultTableModel)jTable1.getModel();
+      try{
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        String query="select * from PRODUCT_TABLE";
+        PreparedStatement stmt=con.prepareStatement(query);
+       // Statement stmt=con.createStatement(query);
+        ResultSet rs=stmt.executeQuery();
+        while (rs.next()) 
+            {
+             dm.addRow(new Object[]{rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10)});
+             jTable1.setModel(dm);
+            }
+  
+      //new productdetails().setVisible(true);
+    }catch(ClassNotFoundException | SQLException e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+
+*/SEARCH PRODUCT ID
+   DefaultTableModel dm =(DefaultTableModel)jTable1.getModel();
+        try{
+        int rec=dm.getRowCount();
+        if(rec>0)
+        {
+            for(int i=0;i<rec;i++)
+            dm.removeRow(0);
+        }
+        String pid=tf1.getText();
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        String query="select * from PRODUCT_TABLE where product_id="+pid+"";
+        PreparedStatement stmt=con.prepareStatement(query);
+        ResultSet rs=stmt.executeQuery();
+        while (rs.next()) 
+            {
+             dm.addRow(new Object[]{rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10)});
+             jTable1.setModel(dm); 
+           
+              
+            }
+   }catch(ClassNotFoundException | SQLException e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+
+**/CHECK PRODUCT AVAILABLE TABLE AND UPDATE IT
+*/1ST RETRIVE DATA
+ try{
+           String pid=tf1.getText();
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        String query="select * from AVAILABLE_TABLE where product_id="+pid+"";
+        PreparedStatement stmt=con.prepareStatement(query);
+        ResultSet rs=stmt.executeQuery();
+        while (rs.next()) 
+            {
+              tf1.setText(rs.getString("product_id"));
+              tf2.setText(rs.getString("product_name"));
+              tf3.setText(rs.getString("quantity"));
+              tf4.setText(rs.getString("specification"));
+            }
+   }catch(ClassNotFoundException | SQLException e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+
+*/UPDATE THE AVAILABLE TABLE AND INSERT IN RETURN TABLE
+try{
+       
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        Statement stmt=con.createStatement();
+        String pid=tf1.getText();
+        //String pname=tf2.getText();
+        //String quantity=tf3.getText();
+        //int quantity=Integer.parseInt(tf3.getText());
+        //String spec=tf4.getText();
+        int issueqt=Integer.parseInt(tf5.getText());
+       /* String date=(String)cb1.getSelectedItem();
+        String month=(String)cb2.getSelectedItem();
+        String year=(String)cb3.getSelectedItem();*/
+        /*int billno=Integer.parseInt(tf7.getText());
+        String sname=tf8.getText();*/
+        //int retqt=Integer.parseInt(tf4.getText());
+        
+        //String query="insert into RETURN_TABLE values("+pid+",'"+pname+"','"+quantity+"','"+spec+"','"+issueqt+"','"+date+"-"+month+"-"+year+"')";
+        String query="update AVAILABLE_TABLE set quantity=(quantity-'"+issueqt+"'),issued_quantity='"+issueqt+"'  where product_id="+pid+"";
+        int rs=stmt.executeUpdate(query);
+        JOptionPane.showMessageDialog(this,"Record inserted successfully");
+        System.out.println(rs+"record inserted");
+    
+    }catch(Exception e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+
+*/LINK WITH AVAILABLE PRODUCT
+availableproduct ap=new availableproduct();
+        ap.setVisible(true);
+        ap.view();
+
+
+
+*/SHOW THE AVAILABLE TABLE
+ public availableproduct() {
+        initComponents();
+    }
+     @SuppressWarnings("empty-statement")
+     public void view(){
+        
+         
+      DefaultTableModel dm =(DefaultTableModel)Table3.getModel();
+      try{
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","karthik","karthik");
+        String query="select * from AVAILABLE_TABLE";
+        PreparedStatement stmt=con.prepareStatement(query);
+        ResultSet rs=stmt.executeQuery();
+        while (rs.next()) 
+        {
+             dm.addRow(new Object[]{rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5)});
+             Table3.setModel(dm);
+             System.out.println("+dm+ ");
+            }
+    }catch(ClassNotFoundException | SQLException e)
+    {
+        System.err.println(e.getMessage());
+    }
+
+
